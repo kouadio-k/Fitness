@@ -52,7 +52,7 @@ export function Onboarding({ initial, onDone, onCancel }: { initial?: Profile; o
       content: (
         <>
           <div className="hero-emoji">👋</div>
-          <h1>Bienvenue !</h1>
+          <h1>Bienvenue dans Bémi's Fitness app !</h1>
           <p className="muted">
             Quelques questions pour te créer un programme d'entraînement et des objectifs nutritionnels sur mesure. Ça prend 2 minutes, et tu pourras tout modifier ensuite.
           </p>

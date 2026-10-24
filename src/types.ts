@@ -198,6 +198,9 @@ export interface Food {
   category?: string;
   /** ai = estimé à partir d'une photo de repas */
   source: 'builtin' | 'custom' | 'openfoodfacts' | 'ai';
+  /** Open Food Facts : Nutri-Score (a à e) et groupe NOVA (1 à 4) quand ils sont connus */
+  nutriscore?: 'a' | 'b' | 'c' | 'd' | 'e';
+  nova?: 1 | 2 | 3 | 4;
   brand?: string;
   barcode?: string;
   vegan?: boolean;

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { StoreProvider } from './store';
 import './styles.css';
+import { requestPersistentStorage } from './lib/backup';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -11,6 +12,9 @@ createRoot(document.getElementById('root')!).render(
     </StoreProvider>
   </StrictMode>,
 );
+
+// Demande au navigateur de ne pas effacer les données de l'application (sans effet si refusé).
+requestPersistentStorage();
 
 // Service worker : fonctionnement hors connexion une fois l'application installée.
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

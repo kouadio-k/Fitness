@@ -2,7 +2,7 @@
 // - Pages : réseau d'abord, cache en secours.
 // - Fichiers statiques (JS/CSS/icônes, noms versionnés par Vite) : cache d'abord.
 // - Open Food Facts et autres domaines : jamais mis en cache.
-const CACHE = 'fitness-coach-v1';
+const CACHE = 'bemis-fitness-v2';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './manifest.webmanifest', './icon.svg'])));

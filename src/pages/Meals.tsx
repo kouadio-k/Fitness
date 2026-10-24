@@ -1,10 +1,10 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useStore, useTargets } from '../store';
 import { BUILTIN_FOODS, MEAL_IDEAS, MEAL_SLOT_LABELS, MEAL_SLOTS, SLOT_SHARE, FOOD_BY_ID } from '../data/foods';
 import { macrosFor, sumEntries, type Macros } from '../lib/nutrition';
 import { addDays, relativeDay, toISODate } from '../lib/dates';
 import { uid } from '../lib/id';
-import { lookupBarcode, searchOpenFoodFacts } from '../lib/openfoodfacts';
+import { lookupBarcode, OffError, REJECT_LABELS, searchOpenFoodFacts, type OffSearchResult } from '../lib/openfoodfacts';
 import { Icon, MacroBar, NumberInput, Ring, Sheet, Tabs, toast } from '../components/ui';
 import type { AppState, Food, FoodEntry, MealSlot } from '../types';
 import { MealPhotoCard } from './MealPhoto';
@@ -211,8 +211,8 @@ function FoodPicker({ slot, date, onClose }: { slot: MealSlot; date: string; onC
     <Sheet title={`Ajouter · ${MEAL_SLOT_LABELS[slot]}`} onClose={onClose} full>
       <Tabs<PickerTab>
         tabs={[
-          { value: 'search', label: 'Aliments' },
-          { value: 'online', label: 'Produits' },
+          { value: 'search', label: 'Rechercher' },
+          { value: 'online', label: 'Code-barres' },
           { value: 'saved', label: 'Mes repas' },
           { value: 'ideas', label: 'Idées' },
           { value: 'create', label: 'Créer' },
@@ -221,7 +221,7 @@ function FoodPicker({ slot, date, onClose }: { slot: MealSlot; date: string; onC
         onChange={setTab}
       />
       {tab === 'search' && <LocalSearch onSelect={setSelected} />}
-      {tab === 'online' && <OnlineSearch onSelect={setSelected} />}
+      {tab === 'online' && <BarcodeSearch onSelect={setSelected} />}
       {tab === 'saved' && <SavedMeals slot={slot} date={date} onDone={onClose} />}
       {tab === 'ideas' && <MealIdeas slot={slot} date={date} onDone={onClose} />}
       {tab === 'create' && <CreateFood onCreated={setSelected} />}
@@ -251,9 +251,28 @@ function FoodRow({ food, onClick }: { food: Food; onClick: () => void }) {
           {food.kcal} kcal · P {food.protein} · G {food.carbs} · L {food.fat} <span className="tiny">/100 g</span>
         </div>
       </div>
+      <FoodBadges food={food} />
       {food.source === 'custom' && <span className="badge neutral">perso</span>}
       <Icon name="plus" />
     </button>
+  );
+}
+
+export function FoodBadges({ food }: { food: Food }) {
+  if (!food.nutriscore && !food.nova) return null;
+  return (
+    <span className="food-badges">
+      {food.nutriscore && (
+        <span className={`nutri ${food.nutriscore}`} title={`Nutri-Score ${food.nutriscore.toUpperCase()}`}>
+          {food.nutriscore.toUpperCase()}
+        </span>
+      )}
+      {food.nova && (
+        <span className="nutri nova" title={`Groupe NOVA ${food.nova} (degré de transformation)`}>
+          N{food.nova}
+        </span>
+      )}
+    </span>
   );
 }
 
@@ -288,12 +307,18 @@ function LocalSearch({ onSelect }: { onSelect: (f: Food) => void }) {
         </span>
       </div>
       {q.trim() ? (
-        <div className="list">
-          {results.map((f) => (
-            <FoodRow key={f.id} food={f} onClick={() => onSelect(f)} />
-          ))}
-          {!results.length && <div className="empty">Aucun résultat. Essaie l'onglet « Produits » (Open Food Facts) ou crée l'aliment.</div>}
-        </div>
+        <>
+          <div className="col" style={{ gap: 4 }}>
+            <h3>Aliments de base & mes aliments</h3>
+            <div className="list">
+              {results.map((f) => (
+                <FoodRow key={f.id} food={f} onClick={() => onSelect(f)} />
+              ))}
+              {!results.length && <div className="empty">Aucun aliment de base ne correspond.</div>}
+            </div>
+          </div>
+          <OffResults query={q.trim()} onSelect={onSelect} />
+        </>
       ) : (
         <>
           {recent.length > 0 && (
@@ -334,72 +359,94 @@ function LocalSearch({ onSelect }: { onSelect: (f: Food) => void }) {
   );
 }
 
-function OnlineSearch({ onSelect }: { onSelect: (f: Food) => void }) {
-  const [q, setQ] = useState('');
-  const [code, setCode] = useState('');
-  const [results, setResults] = useState<Food[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const abort = useRef<AbortController | null>(null);
+/** Produits du commerce (Open Food Facts), filtrés : seules les fiches complètes et cohérentes sont affichées. */
+function OffResults({ query, onSelect }: { query: string; onSelect: (f: Food) => void }) {
+  const [state, setState] = useState<{ q: string; result?: OffSearchResult; error?: string; loading: boolean }>({ q: '', loading: false });
 
-  const run = async (fn: (signal: AbortSignal) => Promise<Food[]>) => {
-    abort.current?.abort();
+  useEffect(() => {
+    if (query.length < 3) return;
     const ctrl = new AbortController();
-    abort.current = ctrl;
-    setLoading(true);
-    setError(null);
+    // Attend une courte pause dans la frappe : Open Food Facts limite le nombre de recherches par minute.
+    const t = window.setTimeout(() => {
+      setState({ q: query, loading: true });
+      searchOpenFoodFacts(query, ctrl.signal)
+        .then((result) => setState({ q: query, result, loading: false }))
+        .catch((e: Error) => {
+          if (e.name !== 'AbortError') setState({ q: query, error: e instanceof OffError ? e.message : 'La recherche a échoué.', loading: false });
+        });
+    }, 900);
+    return () => {
+      window.clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [query]);
+
+  return (
+    <div className="col" style={{ gap: 4 }}>
+      <h3>Produits du commerce</h3>
+      {query.length < 3 ? (
+        <div className="tiny muted">Tape au moins 3 lettres pour chercher dans Open Food Facts.</div>
+      ) : state.loading || state.q !== query ? (
+        <div className="empty">Recherche dans Open Food Facts…</div>
+      ) : state.error ? (
+        <div className="notice danger small">{state.error}</div>
+      ) : state.result ? (
+        <>
+          <div className="list">
+            {state.result.foods.map((f) => (
+              <FoodRow key={f.id} food={f} onClick={() => onSelect(f)} />
+            ))}
+            {!state.result.foods.length && <div className="empty">Aucun produit avec des données fiables pour cette recherche.</div>}
+          </div>
+          <div className="tiny muted">
+            Source : Open Food Facts (base collaborative). {state.result.rejected > 0 && `${state.result.rejected} fiche(s) écartée(s) car incomplètes ou incohérentes. `}
+            Seuls les produits avec calories et macronutriments complets et cohérents sont affichés.
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function BarcodeSearch({ onSelect }: { onSelect: (f: Food) => void }) {
+  const [code, setCode] = useState('');
+  const [status, setStatus] = useState<{ loading?: boolean; message?: string; tone?: 'danger' | 'warning'; food?: Food | null }>({});
+
+  const run = async () => {
+    setStatus({ loading: true });
     try {
-      setResults(await fn(ctrl.signal));
+      const r = await lookupBarcode(code);
+      if (r.food) setStatus({ food: r.food });
+      else if (r.found && r.reason) setStatus({ tone: 'warning', message: `Produit trouvé, mais sa fiche n'est pas fiable (${REJECT_LABELS[r.reason]}). Recopie plutôt les valeurs de l'étiquette dans l'onglet « Créer ».` });
+      else setStatus({ tone: 'warning', message: 'Produit introuvable dans Open Food Facts. Tu peux le créer à partir de son étiquette (onglet « Créer »).' });
     } catch (e) {
-      if ((e as Error).name !== 'AbortError') setError(navigator.onLine ? 'La recherche a échoué. Réessaie dans un instant.' : 'Pas de connexion internet.');
-    } finally {
-      setLoading(false);
+      setStatus({ tone: 'danger', message: e instanceof OffError ? e.message : 'La recherche a échoué.' });
     }
   };
 
   return (
     <>
-      <p className="small muted">
-        Recherche parmi les produits du commerce grâce à <b>Open Food Facts</b>, la base collaborative et gratuite. Nécessite une connexion internet. Les données sont saisies par des contributeurs : vérifie-les avec l'étiquette en cas de doute.
-      </p>
+      <p className="small muted">Tape les chiffres écrits sous le code-barres du produit (8 ou 13 chiffres en général).</p>
       <form
         className="row"
         onSubmit={(e) => {
           e.preventDefault();
-          if (q.trim()) run((s) => searchOpenFoodFacts(q.trim(), s));
+          if (code.replace(/\D/g, '').length >= 8) run();
         }}
       >
-        <input className="input grow" placeholder="Nom ou marque (ex. skyr Siggi's)" value={q} onChange={(e) => setQ(e.target.value)} />
-        <button className="btn" type="submit" disabled={!q.trim() || loading}>
+        <input className="input grow" inputMode="numeric" placeholder="Ex. 3017620422003" value={code} onChange={(e) => setCode(e.target.value)} />
+        <button className="btn" type="submit" disabled={code.replace(/\D/g, '').length < 8 || status.loading}>
           <Icon name="search" size={18} />
         </button>
       </form>
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (code.trim())
-            run(async (s) => {
-              const f = await lookupBarcode(code, s);
-              return f ? [f] : [];
-            });
-        }}
-      >
-        <input className="input grow" inputMode="numeric" placeholder="Code-barres (chiffres sous le code)" value={code} onChange={(e) => setCode(e.target.value)} />
-        <button className="btn secondary" type="submit" disabled={!code.trim() || loading}>
-          <Icon name="barcode" size={18} />
-        </button>
-      </form>
-      {loading && <div className="empty">Recherche…</div>}
-      {error && <div className="notice danger">{error}</div>}
-      {results && !loading && (
+      {status.loading && <div className="empty">Recherche…</div>}
+      {status.message && <div className={`notice ${status.tone ?? ''} small`}>{status.message}</div>}
+      {status.food && (
         <div className="list">
-          {results.map((f) => (
-            <FoodRow key={f.id} food={f} onClick={() => onSelect(f)} />
-          ))}
-          {!results.length && <div className="empty">Aucun produit trouvé (ou valeurs nutritionnelles manquantes).</div>}
+          <FoodRow food={status.food} onClick={() => onSelect(status.food!)} />
         </div>
       )}
+      <p className="tiny muted">Source : Open Food Facts. Seules les fiches complètes et cohérentes sont acceptées.</p>
     </>
   );
 }
@@ -569,6 +616,14 @@ function QuantitySheet({ food, onClose, onConfirm }: { food: Food; onClose: () =
   return (
     <Sheet title={food.name} onClose={onClose}>
       {food.brand && <div className="small muted">{food.brand}</div>}
+      {(food.nutriscore || food.nova) && (
+        <div className="small muted row wrap" style={{ gap: 6 }}>
+          <FoodBadges food={food} />
+          {food.nutriscore && <span>Nutri-Score {food.nutriscore.toUpperCase()}</span>}
+          {food.nova && <span>· NOVA {food.nova} (1 = brut, 4 = ultra-transformé)</span>}
+        </div>
+      )}
+      {food.source === 'openfoodfacts' && <div className="tiny muted">Valeurs pour 100 g issues d'Open Food Facts (vérifiées : complètes et cohérentes). En cas de doute, l'étiquette fait foi.</div>}
       <label className="field">
         Quantité
         <NumberInput value={grams} onChange={setGrams} suffix="g" min={0} />

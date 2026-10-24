@@ -1,8 +1,8 @@
-# Fitness Coach
+# Bémi's Fitness app
 
 Application web mobile (installable sur téléphone) pour se mettre au sport : programme d'entraînement généré sur mesure, suivi des séances, suivi des repas et des progrès.
 
-Tout fonctionne dans le navigateur, **sans compte ni serveur** : les données restent sur le téléphone (export/import d'une sauvegarde depuis le profil).
+Tout fonctionne dans le navigateur, **sans compte ni serveur** : les données s'enregistrent automatiquement sur le téléphone. Un bouton flottant 💾 permet de faire une copie de sauvegarde (feuille de partage : Fichiers, iCloud Drive, e-mail…) et de la restaurer ; un point orange rappelle de le faire après 7 jours sans copie.
 
 ## Fonctionnalités
 
@@ -15,9 +15,11 @@ Tout fonctionne dans le navigateur, **sans compte ni serveur** : les données re
 - Cycle de 4 semaines (semaine 3 un peu plus de volume, semaine 4 allégée).
 - Possibilité de générer une autre variante, de modifier chaque séance (remplacer, ajouter, réordonner un exercice, changer séries/répétitions/repos) et de créer ses propres séances.
 
+**Démos d'exercices** : 70 exercices sur 91 ont une démo en photos (position de départ et d'arrivée, en alternance) issue de [free-exercise-db](https://github.com/yuhonas/free-exercise-db) ; chaque correspondance a été vérifiée visuellement et les variantes avec un autre matériel sont signalées. Tous les exercices ont un lien de recherche vidéo.
+
 **Pendant la séance** : échauffement, saisie charge/répétitions par série, chrono de repos automatique (bip + vibration), chrono d'effort pour le gainage, suggestion de charge basée sur la séance précédente (double progression), remplacement d'un exercice, ressenti (RPE) et notes.
 
-**Repas** : objectifs calories/protéines/glucides/lipides/fibres/eau, ~70 aliments de base, recherche de produits du commerce et code-barres via [Open Food Facts](https://world.openfoodfacts.org), aliments personnalisés, repas enregistrés, « copier d'hier », idées de repas adaptées au régime et ajustées à l'objectif calorique, suivi de l'hydratation.
+**Repas** : objectifs calories/protéines/glucides/lipides/fibres/eau, ~70 aliments de base, recherche de produits du commerce intégrée à la recherche d'aliments et par code-barres via [Open Food Facts](https://world.openfoodfacts.org), avec Nutri-Score et groupe NOVA — seules les fiches complètes et cohérentes sont gardées (calories, protéines, glucides, lipides renseignés ; valeurs plausibles ; énergie déclarée cohérente à ±20 % avec l'énergie recalculée selon les coefficients du règlement UE 1169/2011 ; aucune erreur relevée par les contrôles qualité d'Open Food Facts), aliments personnalisés, repas enregistrés, « copier d'hier », idées de repas adaptées au régime et ajustées à l'objectif calorique, suivi de l'hydratation.
 
 **Analyse de repas en photo (IA, optionnelle)** : photo de l'assiette → liste des aliments et quantités estimées, note d'équilibre sur 10 détaillée critère par critère (légumes & fruits /3, protéines /2, féculents & fibres /2, degré de transformation /1,5, gras-sucre-sel /1,5), points forts, pistes d'amélioration, ajout au journal en un geste. Utilise l'API Claude d'Anthropic avec une clé personnelle saisie dans *Profil → Analyse photo* (stockée uniquement sur le téléphone, jamais dans les sauvegardes exportées). Payant à l'usage : environ 3 à 7 centimes par photo avec Claude Opus 5.5, moins d'un centime avec Claude Haiku 5.5 (estimations d'après les tarifs publics d'octobre 2026).
 
@@ -69,10 +71,12 @@ Les valeurs nutritionnelles de la base intégrée sont des **moyennes arrondies*
 src/
   data/exercises.ts     bibliothèque d'exercices (matériel, niveau, zones à éviter, consignes)
   data/foods.ts         aliments de base et idées de repas
+  data/exerciseDemos.ts correspondance exercices → photos de démonstration
   lib/nutrition.ts      métabolisme, objectifs, calcul des macros
   lib/generator.ts      génération du programme, prescription, progression
   lib/actions.ts        séance en cours, records, statistiques
-  lib/openfoodfacts.ts  recherche produits / code-barres
+  lib/openfoodfacts.ts  recherche produits / code-barres et contrôles de fiabilité
+  lib/backup.ts         copie de sauvegarde, restauration, stockage persistant
   lib/mealAnalysis.ts   analyse photo : grille de notation, appel à l'API Claude
   store.tsx             état global persisté dans le localStorage
   pages/                écrans (accueil, repas, séances, progrès, profil, séance en cours)

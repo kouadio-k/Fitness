@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { currentWeight, EMPTY_STATE, normalizeState, useStore, useTargets } from '../store';
+import { useState } from 'react';
+import { currentWeight, EMPTY_STATE, useStore, useTargets } from '../store';
 import { ACTIVITY_LABELS, bmi, bmiCategory, computeTargets, energyBreakdown, PROTEIN_PER_KG } from '../lib/nutrition';
 import { generateProgram, GOAL_LABELS } from '../lib/generator';
 import { EQUIPMENT_LABEL, EXPERIENCE_OPTIONS, FOCUS_OPTIONS, LIMITATION_LABEL } from '../lib/labels';
@@ -7,6 +7,7 @@ import { WEEKDAY_SHORT, toISODate } from '../lib/dates';
 import { Icon, NumberInput, Sheet, toast } from '../components/ui';
 import { Onboarding } from './Onboarding';
 import { AiSettingsForm } from './MealPhoto';
+import { BackupSheet } from '../components/BackupFab';
 import type { NutritionTargets, Profile as ProfileT } from '../types';
 
 const TRAINING_KEYS: (keyof ProfileT)[] = ['goal', 'experience', 'trainingDays', 'sessionMinutes', 'equipment', 'limitations', 'focus', 'cardio'];
@@ -16,7 +17,7 @@ export function Profile() {
   const targets = useTargets()!;
   const [editing, setEditing] = useState(false);
   const [targetsOpen, setTargetsOpen] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [backupOpen, setBackupOpen] = useState(false);
   const p = state.profile!;
   const weight = currentWeight(state) ?? p.weightKg;
   const e = energyBreakdown(p, weight);
@@ -41,28 +42,6 @@ export function Profile() {
       />
     );
   }
-
-  const exportData = () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `fitness-sauvegarde-${toISODate()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const importData = async (file: File) => {
-    try {
-      const data = JSON.parse(await file.text());
-      if (!data || typeof data !== 'object' || !('profile' in data)) throw new Error('format');
-      if (!window.confirm('Remplacer toutes les données actuelles par celles de la sauvegarde ?')) return;
-      replace(normalizeState(data));
-      toast('Données restaurées');
-    } catch {
-      window.alert('Ce fichier n\'est pas une sauvegarde valide de l\'application.');
-    }
-  };
 
   return (
     <div className="page">
@@ -231,17 +210,11 @@ export function Profile() {
       <div className="card">
         <h3>💾 Mes données</h3>
         <p className="small muted">
-          Toutes les données restent sur cet appareil, dans le navigateur. Fais une sauvegarde de temps en temps (et avant de changer de téléphone) : vider les données du navigateur les efface.
+          Toutes les données restent sur cet appareil et s'enregistrent automatiquement. Pour ne rien perdre en changeant de téléphone, fais régulièrement une copie de sauvegarde (bouton 💾 en bas à droite, ou ci-dessous).
         </p>
-        <div className="row wrap">
-          <button className="btn secondary small" onClick={exportData}>
-            <Icon name="download" size={16} /> Exporter
-          </button>
-          <button className="btn secondary small" onClick={() => fileRef.current?.click()}>
-            <Icon name="upload" size={16} /> Importer
-          </button>
-          <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={(ev) => ev.target.files?.[0] && importData(ev.target.files[0])} />
-        </div>
+        <button className="btn secondary small" style={{ alignSelf: 'flex-start' }} onClick={() => setBackupOpen(true)}>
+          <Icon name="save" size={16} /> Sauvegarder ou restaurer
+        </button>
         <div className="divider" />
         <button
           className="btn danger small"
@@ -256,7 +229,10 @@ export function Profile() {
         </button>
       </div>
 
+      <p className="tiny muted center">Bémi's Fitness app</p>
+
       {targetsOpen && <TargetsSheet onClose={() => setTargetsOpen(false)} />}
+      {backupOpen && <BackupSheet onClose={() => setBackupOpen(false)} />}
     </div>
   );
 }

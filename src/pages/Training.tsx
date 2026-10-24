@@ -7,6 +7,7 @@ import { formatLong, toISODate, WEEKDAY_LONG, weekdayOf } from '../lib/dates';
 import { uid } from '../lib/id';
 import { Chips, Icon, NumberInput, Sheet, Tabs, toast } from '../components/ui';
 import { SwapList } from './WorkoutPlayer';
+import { ExerciseDemo } from '../components/ExerciseDemo';
 import type { CardioLog, Exercise, Muscle, PlannedExercise, SessionTemplate } from '../types';
 import { CARDIO_OPTIONS, EQUIPMENT_LABEL } from '../lib/labels';
 
@@ -482,7 +483,7 @@ function ExercisePicker({ onPick }: { onPick?: (ex: Exercise) => void }) {
       <label className="row small">
         <input type="checkbox" checked={onlyAvailable} onChange={(e) => setOnlyAvailable(e.target.checked)} /> Seulement avec mon matériel et adaptés à mes zones sensibles
       </label>
-      <div className="small muted">{list.length} exercice(s)</div>
+      <div className="small muted">{list.length} exercice(s) · touche un exercice pour voir sa démo</div>
       <div className="list">
         {list.map((e) => (
           <div key={e.id} className="list-item static" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 6 }}>
@@ -500,7 +501,8 @@ function ExercisePicker({ onPick }: { onPick?: (ex: Exercise) => void }) {
               )}
             </div>
             {open === e.id && (
-              <div className="notice small">
+              <div className="notice small col" style={{ gap: 8 }}>
+                <ExerciseDemo exercise={e} />
                 <ul className="clean">
                   {e.cues.map((c) => (
                     <li key={c}>{c}</li>

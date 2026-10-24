@@ -1,6 +1,6 @@
 {
-  "name": "Fitness Coach",
-  "short_name": "Fitness",
+  "name": "Bémi's Fitness app",
+  "short_name": "Bémi's Fitness",
   "description": "Programme d'entraînement personnalisé, suivi des séances et des repas.",
   "lang": "fr",
   "start_url": "./",

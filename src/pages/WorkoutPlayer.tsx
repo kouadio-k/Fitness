@@ -4,6 +4,7 @@ import { getExercise, MUSCLE_LABELS } from '../data/exercises';
 import { alternativesFor, suggestLoad } from '../lib/generator';
 import { findSession, finishWorkout } from '../lib/actions';
 import { Icon, NumberInput, Sheet, toast } from '../components/ui';
+import { ExerciseDemo } from '../components/ExerciseDemo';
 import type { ActiveWorkout } from '../types';
 
 function fmtTime(sec: number) {
@@ -180,16 +181,17 @@ export function WorkoutPlayer({ onMinimize }: { onMinimize: () => void }) {
                     {e.planned.note ? ` ${e.planned.note}` : ''} · repos {e.planned.restSec} s
                   </div>
                 </div>
-                <button className="icon-btn" aria-label="Conseils" onClick={() => setShowCues((c) => ({ ...c, [ei]: !c[ei] }))}>
-                  <Icon name="info" />
+                <button className="btn secondary small" aria-expanded={!!showCues[ei]} onClick={() => setShowCues((c) => ({ ...c, [ei]: !c[ei] }))}>
+                  {showCues[ei] ? 'Fermer' : '▶ Démo'}
                 </button>
                 <button className="icon-btn" aria-label="Remplacer" onClick={() => setSwapIndex(ei)}>
                   <Icon name="swap" />
                 </button>
               </div>
               {showCues[ei] && (
-                <div className="notice small">
-                  <div className="tiny muted" style={{ marginBottom: 4 }}>
+                <div className="notice small col" style={{ gap: 8 }}>
+                  <ExerciseDemo exercise={ex} />
+                  <div className="tiny muted">
                     {ex.muscles.map((m) => MUSCLE_LABELS[m]).join(' · ')}
                   </div>
                   <ul className="clean">

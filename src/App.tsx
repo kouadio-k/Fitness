@@ -10,6 +10,7 @@ import { Progress } from './pages/Progress';
 import { Profile } from './pages/Profile';
 import { WorkoutPlayer } from './pages/WorkoutPlayer';
 import { toISODate } from './lib/dates';
+import { BackupFab } from './components/BackupFab';
 
 export type Page = 'home' | 'meals' | 'training' | 'progress' | 'profile';
 
@@ -79,6 +80,7 @@ export function App() {
           ))}
         </div>
       </nav>
+      <BackupFab />
       {state.activeWorkout && !minimized && <WorkoutPlayer onMinimize={() => setMinimized(true)} />}
       <ToastHost />
     </>
