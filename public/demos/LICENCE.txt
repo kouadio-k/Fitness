@@ -6,7 +6,8 @@ Auteurs : Greg Priday (everkinetic.com), Frank Paczynski
 Licence : Creative Commons Attribution - Partage dans les mêmes conditions 4.0 International (CC BY-SA 4.0)
           https://creativecommons.org/licenses/by-sa/4.0/deed.fr
 
-Modifications : images redimensionnées à 640 px maximum et réduites à 16 niveaux de gris
-pour alléger l'application. Aucune autre modification.
+Modifications : images obtenues à partir des fichiers SVG d'origine (dist/svg), car certains PNG
+fournis coupaient le dessin (pieds, banc) ; recadrées autour du dessin avec une marge, redimensionnées
+à 640 px maximum et réduites à 16 niveaux de gris pour alléger l'application. Aucune autre modification.
 
 Fichiers : <identifiant Everkinetic>-1.png (« relaxation ») et -2.png (« tension ») : les deux positions du mouvement.
