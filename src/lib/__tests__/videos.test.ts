@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { FEMALE_CREATORS, OTHER_CREATORS, videoQueryName, youtubeSearchUrl } from '../../data/exerciseVideos';
+import { videoLinksFor, videoQueryName } from '../../data/exerciseVideos';
 
 describe('liens vidéo', () => {
   it('retire la précision entre parenthèses', () => {
     expect(videoQueryName('Goblet squat (haltère)')).toBe('Goblet squat');
     expect(videoQueryName('Pompes inclinées (mains surélevées)')).toBe('Pompes inclinées');
   });
-  it('cible la créatrice, ou des démonstrations par des femmes', () => {
-    expect(youtubeSearchUrl('Hip thrust (haltère)', 'Juju Fitcats')).toBe('https://www.youtube.com/results?search_query=Juju%20Fitcats%20Hip%20thrust');
-    expect(youtubeSearchUrl('Pont fessier')).toBe('https://www.youtube.com/results?search_query=Pont%20fessier%20exercice%20femme');
+  it('affiche des libellés neutres, sans nom de créatrice ou de créateur', () => {
+    const links = videoLinksFor('Hip thrust (haltère)');
+    expect(links.map((l) => l.label)).toEqual(['Vidéo 1', 'Vidéo 2', 'Vidéo 3', 'Vidéo 4', 'Vidéo 5']);
+    for (const l of links) expect(l.url.startsWith('https://www.youtube.com/results?search_query=')).toBe(true);
   });
-  it('met les créatrices en premier et garde les autres coachs', () => {
-    expect(FEMALE_CREATORS.map((c) => c.name)).toEqual(['Sissy Mua', 'Juju Fitcats']);
-    expect(OTHER_CREATORS.map((c) => c.name)).toEqual(['Tibo InShape', 'Nassim Sahili']);
+  it('privilégie des démonstrations par des femmes', () => {
+    const urls = videoLinksFor('Pont fessier').map((l) => decodeURIComponent(l.url));
+    expect(urls[2]).toContain('Pont fessier exercice femme');
   });
 });

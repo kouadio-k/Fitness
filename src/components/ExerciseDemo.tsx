@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { DEMO_CREDIT, DEMO_LICENSE_URL, demoFor } from '../data/exerciseDemos';
-import { FEMALE_CREATORS, OTHER_CREATORS, youtubeSearchUrl } from '../data/exerciseVideos';
+import { videoLinksFor } from '../data/exerciseVideos';
 import type { Exercise } from '../types';
 
-/** Démo d'un exercice : les deux positions dessinées en alternance, puis liens vidéo (créatrices d'abord). */
+/** Démo d'un exercice : les deux positions dessinées en alternance, puis des liens vers des vidéos. */
 export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
   // Mémorisé : l'écran de séance se redessine toutes les 0,5 s (chrono), ce qui ne doit pas relancer l'animation.
   const demo = useMemo(() => demoFor(exercise.id), [exercise.id]);
@@ -61,27 +61,13 @@ export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
 
       <span className="bold small">Voir en vidéo</span>
       <div className="video-links">
-        {FEMALE_CREATORS.map((c) => (
-          <a key={c.name} className="video-link" href={youtubeSearchUrl(exercise.name, c.name)} target="_blank" rel="noopener noreferrer">
-            <span className="bold">{c.name}</span>
-            <span className="tiny muted">{c.hint}</span>
+        {videoLinksFor(exercise.name).map((v) => (
+          <a key={v.url} className="video-link" href={v.url} target="_blank" rel="noopener noreferrer">
+            <span className="bold">{v.label}</span>
           </a>
         ))}
       </div>
-      <a className="btn ghost small" style={{ alignSelf: 'flex-start' }} href={youtubeSearchUrl(exercise.name)} target="_blank" rel="noopener noreferrer">
-        ▶ Autres démonstrations par des femmes
-      </a>
-      <div className="tiny muted">
-        Autres coachs :{' '}
-        {OTHER_CREATORS.map((c, i) => (
-          <span key={c.name}>
-            {i > 0 && ' · '}
-            <a href={youtubeSearchUrl(exercise.name, c.name)} target="_blank" rel="noopener noreferrer">
-              {c.name}
-            </a>
-          </span>
-        ))}
-      </div>
+      <div className="tiny muted">Chaque lien ouvre une sélection de vidéos YouTube sur cet exercice.</div>
       {demo && !failed && (
         <div className="tiny muted">
           {DEMO_CREDIT} (
