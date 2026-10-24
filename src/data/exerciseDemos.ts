@@ -32,7 +32,7 @@ const DEMOS: Record<string, DemoRef> = {
   'band-row': { file: '0025', approx: 'à la poulie' }, // seated-cable-rows
   'barbell-rdl': { file: '0118' }, // romanian-dead-lift
   'bench-dip': { file: '0162', approx: 'pieds surélevés (plus difficile)' }, // bench-dips
-  'box-squat': { file: '0160', approx: 'avec une barre, sans chaise' }, // wide-stance-squat-with-barbell
+  'box-squat': { file: '0136', approx: 'avec haltères, sur un banc' }, // squat-to-bench-with-dumbbells
   'bulgarian-split-squat': { file: '0147', approx: 'avec une barre' }, // one-leg-squat-with-barbell
   'bw-squat': { file: '0160', approx: 'avec une barre' }, // wide-stance-squat-with-barbell
   'cable-curl': { file: '0212' }, // standing-biceps-curl-with-cable
