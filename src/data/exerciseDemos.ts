@@ -7,11 +7,9 @@
  * https://creativecommons.org/licenses/by-sa/4.0/deed.fr). Les fichiers de public/demos sont ces dessins rendus
  * depuis les SVG d'origine (certains PNG fournis étaient coupés), recadrés et redimensionnés (640 px).
  *
- * Tous les exercices ont aussi une démo 3D (vue 360°) : voir exercisePoses.ts.
- *
  * Chaque correspondance a été vérifiée visuellement ; `approx` signale un dessin du même mouvement avec un
- * matériel ou une position un peu différents. Les exercices sans dessin fiable n'ont pas d'entrée : la démo 3D
- * s'affiche alors directement.
+ * matériel ou une position un peu différents. Les exercices sans dessin fiable n'ont pas d'entrée : seuls les
+ * liens vidéo sont proposés.
  */
 interface DemoRef {
   /** Identifiant Everkinetic : fichiers demos/<file>-1.png et demos/<file>-2.png */

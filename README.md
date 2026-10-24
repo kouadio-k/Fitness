@@ -15,7 +15,7 @@ Tout fonctionne dans le navigateur, **sans compte ni serveur** : les données s'
 - Cycle de 4 semaines (semaine 3 un peu plus de volume, semaine 4 allégée).
 - Possibilité de générer une autre variante, de modifier chaque séance (remplacer, ajouter, réordonner un exercice, changer séries/répétitions/repos) et de créer ses propres séances.
 
-**Démos d'exercices** : pour 57 des 91 exercices, deux dessins (les deux positions du mouvement) affichés en alternance, issus d'[Everkinetic](https://github.com/everkinetic/data) (Greg Priday, licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr) — voir `public/demos/LICENCE.txt`). Chaque correspondance a été vérifiée visuellement ; les variantes sont signalées. Pour les 91 exercices, un bouton « Vue 360° » ouvre un mannequin 3D féminin animé : on tourne autour au doigt (ou avec « Tour à 360° », Face / Profil / Dos), on zoome avec − / + ou au pincement, et on choisit la teinte de peau. Le mannequin et le matériel sont dessinés par l'application (aucune image ni modèle 3D externe) ; les poses ont été réglées d'après les consignes de chaque exercice et contrôlées en image, sans validation par un coach. Pour les exercices sans dessin, le mannequin 3D s'affiche directement. Il faut un navigateur compatible WebGL 2. Pour tous les exercices, un lien « Voir des vidéos de l'exercice » ouvre la recherche YouTube du nom de l'exercice, sans autre mot-clé.
+**Démos d'exercices** : pour 57 des 91 exercices, deux dessins (les deux positions du mouvement) affichés en alternance, issus d'[Everkinetic](https://github.com/everkinetic/data) (Greg Priday, licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr) — voir `public/demos/LICENCE.txt`). Chaque correspondance a été vérifiée visuellement ; les variantes sont signalées. Pour tous les exercices, un lien « Voir des vidéos de l'exercice » ouvre la recherche YouTube du nom de l'exercice, sans autre mot-clé.
 
 **Pendant la séance** : échauffement, saisie charge/répétitions par série, chrono de repos automatique (bip + vibration), chrono d'effort pour le gainage, suggestion de charge basée sur la séance précédente (double progression), remplacement d'un exercice, ressenti (RPE) et notes.
 
@@ -73,8 +73,6 @@ src/
   data/foods.ts         aliments de base et idées de repas
   data/exerciseDemos.ts correspondance exercices → dessins (public/demos)
   data/exerciseVideos.ts lien de recherche YouTube (nom de l'exercice)
-  data/exercisePoses.ts positions du mannequin 3D pour chaque exercice (vue 360°)
-  lib/mannequin/        mannequin 3D : squelette et matériel (core), rendu WebGL 2 (render), cadrage (camera)
   lib/nutrition.ts      métabolisme, objectifs, calcul des macros
   lib/generator.ts      génération du programme, prescription, progression
   lib/actions.ts        séance en cours, records, statistiques

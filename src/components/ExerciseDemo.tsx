@@ -1,38 +1,28 @@
 import { useEffect, useMemo, useState } from 'react';
 import { DEMO_CREDIT, DEMO_LICENSE_URL, demoFor } from '../data/exerciseDemos';
-import { sceneFor } from '../data/exercisePoses';
 import { videoSearchUrl } from '../data/exerciseVideos';
 import type { Exercise } from '../types';
-import { Mannequin3D } from './Mannequin3D';
 
-/**
- * Démo d'un exercice : les deux positions dessinées en alternance, un bouton « Vue 360° » qui ouvre le
- * mannequin 3D (on tourne autour), puis un lien vers des vidéos. Sans dessin, le mannequin 3D s'affiche directement.
- */
+/** Démo d'un exercice : les deux positions dessinées en alternance, puis des liens vers des vidéos. */
 export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
   // Mémorisé : l'écran de séance se redessine toutes les 0,5 s (chrono), ce qui ne doit pas relancer l'animation.
   const demo = useMemo(() => demoFor(exercise.id), [exercise.id]);
-  const scene3d = useMemo(() => sceneFor(exercise.id), [exercise.id]);
   const hasDemo = !!demo;
   const [frame, setFrame] = useState(0);
   const [paused, setPaused] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [view360, setView360] = useState(false);
   const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  const drawings = hasDemo && !failed;
-  const show3d = !!scene3d && (view360 || !drawings);
 
   useEffect(() => {
-    if (!hasDemo || paused || reduceMotion || failed || show3d) return;
+    if (!hasDemo || paused || reduceMotion || failed) return;
     const t = window.setInterval(() => setFrame((f) => 1 - f), 1300);
     return () => window.clearInterval(t);
-  }, [hasDemo, paused, reduceMotion, failed, show3d]);
+  }, [hasDemo, paused, reduceMotion, failed]);
 
-  // Exercice remplacé pendant la séance : on repart de la position de repos, en dessin.
+  // Exercice remplacé pendant la séance : on repart de la position de repos.
   useEffect(() => {
     setFrame(0);
     setFailed(false);
-    setView360(false);
   }, [exercise.id]);
 
   const show = (f: number) => {
@@ -42,7 +32,7 @@ export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
 
   return (
     <div className="col" style={{ gap: 10 }}>
-      {drawings && !show3d && (
+      {demo && !failed && (
         <>
           <button
             type="button"
@@ -67,21 +57,12 @@ export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
           </div>
         </>
       )}
-      {hasDemo && failed && <div className="tiny muted">Dessins indisponibles pour le moment.</div>}
+      {demo && failed && <div className="tiny muted">Dessins indisponibles pour le moment.</div>}
 
-      {show3d && scene3d && <Mannequin3D key={exercise.id} ex={scene3d} />}
-
-      <div className="row wrap" style={{ gap: 8 }}>
-        {drawings && scene3d && (
-          <button type="button" className="btn secondary small" onClick={() => setView360((v) => !v)}>
-            {view360 ? '← Revenir au dessin' : '⟳ Vue 360°'}
-          </button>
-        )}
-        <a className="btn secondary small" href={videoSearchUrl(exercise.name)} target="_blank" rel="noopener noreferrer">
-          ▶ Voir des vidéos de l'exercice
-        </a>
-      </div>
-      {drawings && !show3d && (
+      <a className="btn secondary small" style={{ alignSelf: 'flex-start' }} href={videoSearchUrl(exercise.name)} target="_blank" rel="noopener noreferrer">
+        ▶ Voir des vidéos de l'exercice
+      </a>
+      {demo && !failed && (
         <div className="tiny muted">
           {DEMO_CREDIT} (
           <a href={DEMO_LICENSE_URL} target="_blank" rel="noopener noreferrer">
