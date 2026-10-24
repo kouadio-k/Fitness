@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { DEMO_CREDIT, DEMO_LICENSE_URL, demoFor } from '../data/exerciseDemos';
-import { videoLinksFor } from '../data/exerciseVideos';
+import { videoSearchUrl } from '../data/exerciseVideos';
 import type { Exercise } from '../types';
 
 /** Démo d'un exercice : les deux positions dessinées en alternance, puis des liens vers des vidéos. */
@@ -59,15 +59,9 @@ export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
       )}
       {demo && failed && <div className="tiny muted">Dessins indisponibles pour le moment.</div>}
 
-      <span className="bold small">Voir en vidéo</span>
-      <div className="video-links">
-        {videoLinksFor(exercise.name).map((v) => (
-          <a key={v.url} className="video-link" href={v.url} target="_blank" rel="noopener noreferrer">
-            <span className="bold">{v.label}</span>
-          </a>
-        ))}
-      </div>
-      <div className="tiny muted">Chaque lien ouvre une sélection de vidéos YouTube sur cet exercice.</div>
+      <a className="btn secondary small" style={{ alignSelf: 'flex-start' }} href={videoSearchUrl(exercise.name)} target="_blank" rel="noopener noreferrer">
+        ▶ Voir des vidéos de l'exercice
+      </a>
       {demo && !failed && (
         <div className="tiny muted">
           {DEMO_CREDIT} (

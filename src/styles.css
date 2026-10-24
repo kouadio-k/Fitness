@@ -431,15 +431,6 @@ ul.clean { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
 .demo-tag-right { left: auto; right: 8px; top: 8px; bottom: auto; }
 @media (prefers-reduced-motion: reduce) { .demo-frame img { transition: none; } }
 
-.video-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
-.video-link {
-  display: flex; flex-direction: column; gap: 2px; min-width: 0;
-  padding: 10px 12px; min-height: 44px; justify-content: center; box-sizing: border-box; border-radius: var(--radius-sm);
-  background: var(--surface); border: 1px solid var(--border);
-  color: var(--text); text-decoration: none;
-}
-.video-link:active { transform: scale(0.98); }
-.video-link .bold::before { content: '▶ '; color: var(--danger); }
 
 /* ---------- Bouton flottant de sauvegarde ---------- */
 .fab {
