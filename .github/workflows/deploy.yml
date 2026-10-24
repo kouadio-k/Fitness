@@ -1,10 +1,10 @@
-# Publie l'application sur GitHub Pages à chaque push sur main.
+# Publie l'application sur GitHub Pages à chaque push sur la branche principale.
 # Prérequis (une seule fois) : Settings → Pages → Source : « GitHub Actions ».
 name: Déploiement GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, Main]
   workflow_dispatch:
 
 permissions:

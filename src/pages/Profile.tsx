@@ -6,6 +6,7 @@ import { EQUIPMENT_LABEL, EXPERIENCE_OPTIONS, FOCUS_OPTIONS, LIMITATION_LABEL } 
 import { WEEKDAY_SHORT, toISODate } from '../lib/dates';
 import { Icon, NumberInput, Sheet, toast } from '../components/ui';
 import { Onboarding } from './Onboarding';
+import { AiSettingsForm } from './MealPhoto';
 import type { NutritionTargets, Profile as ProfileT } from '../types';
 
 const TRAINING_KEYS: (keyof ProfileT)[] = ['goal', 'experience', 'trainingDays', 'sessionMinutes', 'equipment', 'limitations', 'focus', 'cardio'];
@@ -180,6 +181,13 @@ export function Profile() {
       </div>
 
       <details className="card disclosure">
+        <summary>📷 Analyse photo des repas (IA)</summary>
+        <div>
+          <AiSettingsForm />
+        </div>
+      </details>
+
+      <details className="card disclosure">
         <summary>📚 Méthode & sources</summary>
         <div className="col small">
           <p>
@@ -196,6 +204,9 @@ export function Profile() {
           </p>
           <p>
             <b>Entraînement</b> — fréquence, séries et répétitions inspirées de la position de l'American College of Sports Medicine sur la progression en musculation (ACSM, 2009) ; activité d'endurance selon les lignes directrices de l'OMS (2020) : 150-300 min/semaine d'intensité modérée + renforcement musculaire au moins 2 jours/semaine.
+          </p>
+          <p>
+            <b>Note des repas en photo</b> — estimation par l'IA Claude (Anthropic) selon une grille sur 10 : légumes & fruits (3), protéines (2), féculents & fibres (2), degré de transformation (1,5), gras/sucre/sel (1,5). Grille inspirée des repères de Santé publique France (PNNS 2019), de la classification NOVA et du principe de l'assiette équilibrée ; la pondération est un choix de l'application. Quantités et calories estimées sur photo : ordre de grandeur seulement.
           </p>
           <p>
             <b>1RM estimé</b> — formule d'Epley, indicative uniquement. <b>Aliments</b> — valeurs moyennes arrondies (tables Ciqual/ANSES et USDA) ; produits du commerce via Open Food Facts (données collaboratives).

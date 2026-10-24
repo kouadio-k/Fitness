@@ -196,7 +196,8 @@ export interface Food {
   portionG?: number;
   portionLabel?: string;
   category?: string;
-  source: 'builtin' | 'custom' | 'openfoodfacts';
+  /** ai = estimé à partir d'une photo de repas */
+  source: 'builtin' | 'custom' | 'openfoodfacts' | 'ai';
   brand?: string;
   barcode?: string;
   vegan?: boolean;
@@ -252,10 +253,45 @@ export interface AppState {
   weights: WeightEntry[];
   measurements: Measurement[];
   activeWorkout: ActiveWorkout | null;
+  mealAnalyses: MealAnalysis[];
 }
 
 export interface ActiveWorkout {
   sessionId: string;
   startedAt: string;
   exercises: (LoggedExercise & { planned: PlannedExercise })[];
+}
+
+// ---------- Analyse photo des repas ----------
+
+export type CriterionId = 'legumes_fruits' | 'proteines' | 'feculents_fibres' | 'transformation' | 'gras_sucre_sel';
+
+export interface AnalyzedItem {
+  name: string;
+  grams: number;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+}
+
+export interface MealAnalysis {
+  id: string;
+  date: string;
+  createdAt: string;
+  /** Miniature JPEG (data URL) pour l'historique */
+  thumbnail?: string;
+  isFood: boolean;
+  mealName: string;
+  /** Note sur 10 = somme des critères */
+  score: number;
+  criteria: { id: CriterionId; score: number; max: number; comment: string }[];
+  strengths: string[];
+  improvements: string[];
+  items: AnalyzedItem[];
+  confidence: 'faible' | 'moyenne' | 'bonne';
+  caveats: string;
+  goalComment: string;
+  model: string;
 }

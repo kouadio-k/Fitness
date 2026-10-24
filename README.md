@@ -19,6 +19,8 @@ Tout fonctionne dans le navigateur, **sans compte ni serveur** : les données re
 
 **Repas** : objectifs calories/protéines/glucides/lipides/fibres/eau, ~70 aliments de base, recherche de produits du commerce et code-barres via [Open Food Facts](https://world.openfoodfacts.org), aliments personnalisés, repas enregistrés, « copier d'hier », idées de repas adaptées au régime et ajustées à l'objectif calorique, suivi de l'hydratation.
 
+**Analyse de repas en photo (IA, optionnelle)** : photo de l'assiette → liste des aliments et quantités estimées, note d'équilibre sur 10 détaillée critère par critère (légumes & fruits /3, protéines /2, féculents & fibres /2, degré de transformation /1,5, gras-sucre-sel /1,5), points forts, pistes d'amélioration, ajout au journal en un geste. Utilise l'API Claude d'Anthropic avec une clé personnelle saisie dans *Profil → Analyse photo* (stockée uniquement sur le téléphone, jamais dans les sauvegardes exportées). Payant à l'usage : environ 3 à 7 centimes par photo avec Claude Opus 5.5, moins d'un centime avec Claude Haiku 5.5 (estimations d'après les tarifs publics d'octobre 2026).
+
 **Progrès** : courbe de poids avec moyenne sur 7 jours, mensurations, calories des 7 derniers jours, minutes de cardio de la semaine, records personnels, séries de semaines actives.
 
 ## Utilisation
@@ -53,6 +55,7 @@ Une fois installée, l'application fonctionne hors connexion (sauf la recherche 
 | IMC | Seuils 18,5 / 25 / 30 | OMS |
 | Séries / répétitions / fréquence | 8-12 rép. pour débuter/hypertrophie, ≤ 6 rép. et repos longs pour la force, 12-20 rép. pour l'endurance ; 2-3 séances/semaine par groupe musculaire | ACSM Position Stand « Progression models in resistance training for healthy adults », *Med Sci Sports Exerc* 2009 |
 | Activité d'endurance | 150-300 min/semaine d'intensité modérée + renforcement ≥ 2 j/semaine | Lignes directrices de l'OMS sur l'activité physique, 2020 |
+| Note des repas en photo | Grille sur 10 appliquée par l'IA, total recalculé par l'application | Inspirée des repères de Santé publique France (PNNS 2019), de la classification NOVA et du principe de l'assiette équilibrée — **pondération choisie par l'application**, pas un score officiel ; quantités et calories estimées sur photo = ordre de grandeur |
 | 1RM estimé | Formule d'Epley : charge × (1 + rép./30) | Indicatif uniquement |
 | Valeurs des aliments de base | Moyennes arrondies | Tables Ciqual (ANSES) et USDA FoodData Central — ordres de grandeur, à vérifier sur l'étiquette pour un produit précis |
 
@@ -70,6 +73,7 @@ src/
   lib/generator.ts      génération du programme, prescription, progression
   lib/actions.ts        séance en cours, records, statistiques
   lib/openfoodfacts.ts  recherche produits / code-barres
+  lib/mealAnalysis.ts   analyse photo : grille de notation, appel à l'API Claude
   store.tsx             état global persisté dans le localStorage
   pages/                écrans (accueil, repas, séances, progrès, profil, séance en cours)
 public/sw.js            service worker (hors connexion)

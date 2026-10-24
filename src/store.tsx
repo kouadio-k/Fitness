@@ -19,6 +19,7 @@ export const EMPTY_STATE: AppState = {
   water: {},
   weights: [],
   measurements: [],
+  mealAnalyses: [],
   activeWorkout: null,
 };
 
@@ -39,6 +40,7 @@ export function normalizeState(raw: unknown): AppState {
     water: r.water ?? {},
     weights: r.weights ?? [],
     measurements: r.measurements ?? [],
+    mealAnalyses: r.mealAnalyses ?? [],
   };
 }
 

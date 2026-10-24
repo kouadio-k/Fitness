@@ -7,6 +7,7 @@ import { uid } from '../lib/id';
 import { lookupBarcode, searchOpenFoodFacts } from '../lib/openfoodfacts';
 import { Icon, MacroBar, NumberInput, Ring, Sheet, Tabs, toast } from '../components/ui';
 import type { AppState, Food, FoodEntry, MealSlot } from '../types';
+import { MealPhotoCard } from './MealPhoto';
 
 const SLOT_EMOJI: Record<MealSlot, string> = { breakfast: '🥣', lunch: '🥗', snack: '🍎', dinner: '🍲' };
 
@@ -54,6 +55,7 @@ export function Meals() {
       </div>
 
       {targets && <DaySummary totals={totals} targets={targets} />}
+      <MealPhotoCard date={date} />
       <WaterCard date={date} />
 
       {MEAL_SLOTS.map((slot) => {
