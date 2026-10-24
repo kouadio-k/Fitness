@@ -415,19 +415,16 @@ ul.clean { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   font-size: 0.9rem; box-shadow: var(--shadow); animation: fade 0.2s ease; max-width: calc(100% - 32px);
 }
 
-/* ---------- Démo d'exercice ---------- */
-.demo-frame {
-  position: relative; width: 100%; aspect-ratio: 3 / 2; max-width: 100%;
-  border: 0; padding: 0; border-radius: var(--radius-sm); overflow: hidden;
-  background: var(--surface-2); cursor: pointer;
+/* ---------- Démo d'exercice (liens vidéo) ---------- */
+.video-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.video-link {
+  display: flex; flex-direction: column; gap: 2px; min-width: 0;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); text-decoration: none;
 }
-.demo-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.35s ease; }
-.demo-tag {
-  position: absolute; left: 8px; bottom: 8px;
-  background: rgba(0, 0, 0, 0.6); color: #fff; font-size: 0.72rem; font-weight: 600;
-  padding: 3px 8px; border-radius: 999px;
-}
-@media (prefers-reduced-motion: reduce) { .demo-frame img { transition: none; } }
+.video-link:active { transform: scale(0.98); }
+.video-link .bold::before { content: '▶ '; color: var(--danger); }
 
 /* ---------- Bouton flottant de sauvegarde ---------- */
 .fab {

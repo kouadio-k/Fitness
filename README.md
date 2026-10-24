@@ -15,7 +15,7 @@ Tout fonctionne dans le navigateur, **sans compte ni serveur** : les données s'
 - Cycle de 4 semaines (semaine 3 un peu plus de volume, semaine 4 allégée).
 - Possibilité de générer une autre variante, de modifier chaque séance (remplacer, ajouter, réordonner un exercice, changer séries/répétitions/repos) et de créer ses propres séances.
 
-**Démos d'exercices** : 70 exercices sur 91 ont une démo en photos (position de départ et d'arrivée, en alternance) issue de [free-exercise-db](https://github.com/yuhonas/free-exercise-db) ; chaque correspondance a été vérifiée visuellement et les variantes avec un autre matériel sont signalées. Tous les exercices ont un lien de recherche vidéo.
+**Démos d'exercices** : pour chaque exercice, des liens vers YouTube ciblant des créateurs fitness francophones de référence (Nassim Sahili, Tibo InShape, Sissy Mua, Juju Fitcats) — recherche « créateur + exercice », aucune vidéo n'est codée en dur ; si le créateur n'a pas de vidéo sur l'exercice, YouTube affiche des vidéos proches.
 
 **Pendant la séance** : échauffement, saisie charge/répétitions par série, chrono de repos automatique (bip + vibration), chrono d'effort pour le gainage, suggestion de charge basée sur la séance précédente (double progression), remplacement d'un exercice, ressenti (RPE) et notes.
 
@@ -71,7 +71,7 @@ Les valeurs nutritionnelles de la base intégrée sont des **moyennes arrondies*
 src/
   data/exercises.ts     bibliothèque d'exercices (matériel, niveau, zones à éviter, consignes)
   data/foods.ts         aliments de base et idées de repas
-  data/exerciseDemos.ts correspondance exercices → photos de démonstration
+  data/exerciseVideos.ts créateurs vidéo et liens de recherche YouTube
   lib/nutrition.ts      métabolisme, objectifs, calcul des macros
   lib/generator.ts      génération du programme, prescription, progression
   lib/actions.ts        séance en cours, records, statistiques

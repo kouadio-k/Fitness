@@ -1,55 +1,23 @@
-import { useEffect, useState } from 'react';
-import { demoFor, videoSearchUrl } from '../data/exerciseDemos';
+import { VIDEO_CREATORS, youtubeSearchUrl } from '../data/exerciseVideos';
 import type { Exercise } from '../types';
 
-/** Démo d'un exercice : alternance des photos départ / arrivée + lien vers une recherche vidéo. */
+/** Démo d'un exercice : liens vers des vidéos YouTube de créateurs fitness de référence. */
 export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
-  const demo = demoFor(exercise.id);
-  const [frame, setFrame] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-
-  useEffect(() => {
-    if (!demo || paused || reduceMotion || failed) return;
-    const t = window.setInterval(() => setFrame((f) => 1 - f), 1300);
-    return () => window.clearInterval(t);
-  }, [demo, paused, reduceMotion, failed]);
-
   return (
     <div className="col" style={{ gap: 8 }}>
-      {demo && !failed && (
-        <>
-          <button
-            type="button"
-            className="demo-frame"
-            onClick={() => setPaused((p) => !p)}
-            aria-label={paused ? 'Relancer l\'animation' : 'Mettre l\'animation en pause'}
-          >
-            {demo.images.map((src, i) => (
-              <img key={src} src={src} alt={i === 0 ? 'Position 1' : 'Position 2'} loading="lazy" onError={() => setFailed(true)} style={{ opacity: frame === i ? 1 : 0 }} />
-            ))}
-            <span className="demo-tag">
-              {frame === 0 ? 'Position 1' : 'Position 2'}
-              {paused ? ' · pause' : ''}
-            </span>
-          </button>
-          <div className="row wrap tiny muted" style={{ gap: 6 }}>
-            <button type="button" className="chip" style={{ minHeight: 30, padding: '4px 10px' }} onClick={() => { setPaused(true); setFrame(0); }}>
-              Position 1
-            </button>
-            <button type="button" className="chip" style={{ minHeight: 30, padding: '4px 10px' }} onClick={() => { setPaused(true); setFrame(1); }}>
-              Position 2
-            </button>
-            {demo.approx && <span>Variante montrée : {demo.approx}.</span>}
-          </div>
-        </>
-      )}
-      {demo && failed && <div className="tiny muted">Photos de démonstration indisponibles (pas de connexion ?).</div>}
-      <a className="btn ghost small" style={{ alignSelf: 'flex-start' }} href={videoSearchUrl(exercise.name)} target="_blank" rel="noopener noreferrer">
-        ▶ Voir des vidéos de l'exercice
+      <span className="bold small">▶ Voir la démo en vidéo</span>
+      <div className="video-links">
+        {VIDEO_CREATORS.map((c) => (
+          <a key={c.name} className="video-link" href={youtubeSearchUrl(exercise.name, c.name)} target="_blank" rel="noopener noreferrer">
+            <span className="bold">{c.name}</span>
+            <span className="tiny muted">{c.hint}</span>
+          </a>
+        ))}
+      </div>
+      <a className="tiny" href={youtubeSearchUrl(exercise.name)} target="_blank" rel="noopener noreferrer">
+        Toutes les vidéos sur cet exercice
       </a>
-      {demo && !failed && <div className="tiny muted">Photos : free-exercise-db. Vidéos : recherche YouTube, choisis de préférence une vidéo d'un·e coach diplômé·e.</div>}
+      <span className="tiny muted">Ouvre YouTube sur les résultats de recherche : si le créateur n'a pas de vidéo sur cet exercice, des vidéos proches s'affichent.</span>
     </div>
   );
 }
