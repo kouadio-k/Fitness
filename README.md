@@ -14,6 +14,7 @@ Tout fonctionne dans le navigateur, **sans compte ni serveur** : les données s'
 - Séries, répétitions et temps de repos selon l'objectif ; nombre d'exercices ajusté à la durée souhaitée.
 - Cycle de 4 semaines (semaine 3 un peu plus de volume, semaine 4 allégée).
 - Possibilité de générer une autre variante, de modifier chaque séance (remplacer, ajouter, réordonner un exercice, changer séries/répétitions/repos) et de créer ses propres séances.
+- Ajout des séances au calendrier du téléphone : un fichier `.ics` (iCalendar, RFC 5545) avec un événement hebdomadaire par jour d'entraînement, l'heure choisie, un rappel facultatif et une durée (4, 8, 12 semaines ou sans fin). C'est le calendrier du téléphone qui envoie les rappels. Vérifié sur Android (Samsung) ; sur iPhone, la méthode est en cours de test avec la page temporaire `public/essai-calendrier.html`.
 
 **Démos d'exercices** : pour 89 des 91 exercices, deux dessins (les deux positions du mouvement) affichés en alternance, ou un seul dessin pour 5 exercices (exercice tenu, ou pas de seconde position cohérente). Ils viennent d'[Everkinetic](https://github.com/everkinetic/data) (Greg Priday) et de [Workout Guide](https://github.com/bryllim/workout-guide) (Bryl Lim), tous deux sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr) ; les modifications sont décrites dans `public/demos/LICENCE.txt`. Chaque correspondance a été vérifiée visuellement ; les variantes sont signalées. Le développé poitrine à l'élastique et le shadow boxing n'ont pas de dessin (aucune source libre trouvée). Pour tous les exercices, un lien « Voir des vidéos de l'exercice » ouvre la recherche YouTube du nom de l'exercice, sans autre mot-clé.
 
@@ -78,6 +79,7 @@ src/
   lib/actions.ts        séance en cours, records, statistiques
   lib/openfoodfacts.ts  recherche produits / code-barres et contrôles de fiabilité
   lib/backup.ts         copie de sauvegarde, restauration, stockage persistant
+  lib/calendar.ts       fichier calendrier (.ics) des séances du planning
   lib/mealAnalysis.ts   analyse photo : grille de notation, appel à l'API Claude
   store.tsx             état global persisté dans le localStorage
   pages/                écrans (accueil, repas, séances, progrès, profil, séance en cours)

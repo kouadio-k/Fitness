@@ -64,6 +64,17 @@ export function firstOccurrence(weekday: number, time: string, now = new Date())
   return d;
 }
 
+/** Comment ouvrir le fichier téléchargé, selon le téléphone (l'iPad récent se présente comme un Mac tactile). */
+export function openFileHint(ua = navigator.userAgent, touchPoints = navigator.maxTouchPoints ?? 0): string {
+  if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && touchPoints > 1)) {
+    return `Fichier créé. Si Calendrier ne s'ouvre pas, ouvre l'app Fichiers → Téléchargements et touche « ${CALENDAR_FILE_NAME} » pour ajouter les séances.`;
+  }
+  if (/Android/.test(ua)) {
+    return 'Fichier téléchargé. Ouvre-le depuis la notification de téléchargement (ou Mes fichiers → Téléchargements) et choisis Calendrier pour ajouter les séances.';
+  }
+  return `Fichier téléchargé. Ouvre « ${CALENDAR_FILE_NAME} » avec ton agenda pour ajouter les séances.`;
+}
+
 /** Télécharge le fichier : la notification de téléchargement propose ensuite de l'ouvrir avec Calendrier. */
 export function downloadCalendarFile(ics: string): void {
   const url = URL.createObjectURL(new File([ics], CALENDAR_FILE_NAME, { type: 'text/calendar' }));

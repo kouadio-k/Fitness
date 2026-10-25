@@ -8,7 +8,7 @@ import { uid } from '../lib/id';
 import { Chips, Icon, NumberInput, Sheet, Tabs, toast } from '../components/ui';
 import { SwapList } from './WorkoutPlayer';
 import { ExerciseDemo } from '../components/ExerciseDemo';
-import { downloadCalendarFile, firstOccurrence, programToICS } from '../lib/calendar';
+import { downloadCalendarFile, firstOccurrence, openFileHint, programToICS } from '../lib/calendar';
 import type { CardioLog, Exercise, Muscle, PlannedExercise, Program, SessionTemplate } from '../types';
 import { CARDIO_OPTIONS, EQUIPMENT_LABEL } from '../lib/labels';
 
@@ -184,11 +184,7 @@ function CalendarSheet({ program, onClose }: { program: Program; onClose: () => 
       <button className="btn block" onClick={create}>
         <Icon name="calendar" size={18} /> Créer le fichier calendrier
       </button>
-      {done && (
-        <div className="notice success small">
-          Fichier téléchargé. Ouvre-le depuis la notification de téléchargement (ou Mes fichiers → Téléchargements) et choisis Calendrier pour ajouter les séances.
-        </div>
-      )}
+      {done && <div className="notice success small">{openFileHint()}</div>}
       <p className="tiny muted">
         Les séances ajoutées ne changent plus ensuite : si tu modifies l'heure ou le programme, supprime-les du calendrier puis ajoute-les à nouveau.
       </p>
