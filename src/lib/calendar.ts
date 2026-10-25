@@ -64,6 +64,18 @@ export function firstOccurrence(weekday: number, time: string, now = new Date())
   return d;
 }
 
+/** Télécharge le fichier : la notification de téléchargement propose ensuite de l'ouvrir avec Calendrier. */
+export function downloadCalendarFile(ics: string): void {
+  const url = URL.createObjectURL(new File([ics], CALENDAR_FILE_NAME, { type: 'text/calendar' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = CALENDAR_FILE_NAME;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
 export function programToICS(program: Program, opts: CalendarOptions, now = new Date()): string {
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Bemis Fitness//Seances//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
   for (const day of program.schedule) {

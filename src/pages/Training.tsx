@@ -8,7 +8,8 @@ import { uid } from '../lib/id';
 import { Chips, Icon, NumberInput, Sheet, Tabs, toast } from '../components/ui';
 import { SwapList } from './WorkoutPlayer';
 import { ExerciseDemo } from '../components/ExerciseDemo';
-import type { CardioLog, Exercise, Muscle, PlannedExercise, SessionTemplate } from '../types';
+import { downloadCalendarFile, firstOccurrence, programToICS } from '../lib/calendar';
+import type { CardioLog, Exercise, Muscle, PlannedExercise, Program, SessionTemplate } from '../types';
 import { CARDIO_OPTIONS, EQUIPMENT_LABEL } from '../lib/labels';
 
 type Tab = 'program' | 'custom' | 'history' | 'library';
@@ -44,6 +45,7 @@ function ProgramView() {
   const { state, update } = useStore();
   const program = state.program;
   const [cardioOpen, setCardioOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   if (!program || !state.profile) return <div className="empty">Aucun programme. Complète ton profil pour en générer un.</div>;
   const week = cycleWeek(program);
   const today = weekdayOf(toISODate());
@@ -87,9 +89,14 @@ function ProgramView() {
           })}
         </div>
         <p className="small muted">🏃 {program.cardioAdvice}</p>
-        <button className="btn secondary small" onClick={() => setCardioOpen(true)}>
-          <Icon name="run" size={18} /> Noter une activité cardio
-        </button>
+        <div className="row wrap">
+          <button className="btn secondary small" onClick={() => setCardioOpen(true)}>
+            <Icon name="run" size={18} /> Noter une activité cardio
+          </button>
+          <button className="btn secondary small" onClick={() => setCalendarOpen(true)}>
+            <Icon name="calendar" size={18} /> Ajouter au calendrier
+          </button>
+        </div>
       </div>
 
       {program.sessions.map((s) => (
@@ -111,7 +118,81 @@ function ProgramView() {
         <Icon name="refresh" size={18} /> Générer une autre variante
       </button>
       {cardioOpen && <CardioSheet onClose={() => setCardioOpen(false)} />}
+      {calendarOpen && <CalendarSheet program={program} onClose={() => setCalendarOpen(false)} />}
     </>
+  );
+}
+
+const ALARM_OPTIONS = [
+  { value: 'none', label: 'Aucun' },
+  { value: '0', label: 'À l\'heure' },
+  { value: '15', label: '15 min avant' },
+  { value: '30', label: '30 min avant' },
+  { value: '60', label: '1 h avant' },
+];
+const WEEKS_OPTIONS = [
+  { value: '4', label: '4 semaines' },
+  { value: '8', label: '8 semaines' },
+  { value: '12', label: '12 semaines' },
+  { value: 'none', label: 'Sans fin' },
+];
+const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
+/** Ajoute les séances du planning au calendrier du téléphone (fichier .ics), avec un rappel. */
+function CalendarSheet({ program, onClose }: { program: Program; onClose: () => void }) {
+  const [time, setTime] = useState('18:00');
+  const [alarm, setAlarm] = useState('30');
+  const [weeks, setWeeks] = useState('12');
+  const [done, setDone] = useState(false);
+  const create = () => {
+    downloadCalendarFile(
+      programToICS(program, { time, alarmMinutes: alarm === 'none' ? null : Number(alarm), weeks: weeks === 'none' ? null : Number(weeks) }),
+    );
+    setDone(true);
+  };
+  return (
+    <Sheet title="Ajouter au calendrier" onClose={onClose}>
+      <p className="small muted">Chaque jour d'entraînement devient une séance qui se répète chaque semaine dans le calendrier de ton téléphone. C'est lui qui t'enverra le rappel.</p>
+      <label className="field">
+        Heure des séances
+        <input type="time" className="input" value={time} onChange={(e) => setTime(e.target.value || '18:00')} />
+      </label>
+      <div className="col" style={{ gap: 6 }}>
+        <span className="small bold">Rappel</span>
+        <Chips options={ALARM_OPTIONS} value={alarm} onChange={setAlarm} />
+      </div>
+      <div className="col" style={{ gap: 6 }}>
+        <span className="small bold">Pendant</span>
+        <Chips options={WEEKS_OPTIONS} value={weeks} onChange={setWeeks} />
+      </div>
+      <div className="list">
+        {program.schedule.map((d) => {
+          const s = program.sessions.find((x) => x.id === d.sessionId);
+          if (!s) return null;
+          const start = firstOccurrence(d.weekday, time);
+          return (
+            <div key={d.weekday} className="list-item static">
+              <span className="bold" style={{ minWidth: 76 }}>{WEEKDAY_LONG[d.weekday]}</span>
+              <span className="grow">{s.name}</span>
+              <span className="small muted">
+                {hhmm(start)}–{hhmm(new Date(start.getTime() + estimateSessionMinutes(s) * 60000))}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      <button className="btn block" onClick={create}>
+        <Icon name="calendar" size={18} /> Créer le fichier calendrier
+      </button>
+      {done && (
+        <div className="notice success small">
+          Fichier téléchargé. Ouvre-le depuis la notification de téléchargement (ou Mes fichiers → Téléchargements) et choisis Calendrier pour ajouter les séances.
+        </div>
+      )}
+      <p className="tiny muted">
+        Les séances ajoutées ne changent plus ensuite : si tu modifies l'heure ou le programme, supprime-les du calendrier puis ajoute-les à nouveau.
+      </p>
+    </Sheet>
   );
 }
 
