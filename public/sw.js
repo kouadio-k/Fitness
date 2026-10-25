@@ -21,6 +21,9 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
 
   if (req.mode === 'navigate') {
+    // Autres pages du site (page de test, par exemple) : laissées au navigateur, pour ne jamais
+    // remplacer la page de l'appli gardée en cache pour le hors connexion.
+    if (!url.pathname.endsWith('/') && !url.pathname.endsWith('/index.html')) return;
     event.respondWith(
       fetch(req)
         .then((res) => {
