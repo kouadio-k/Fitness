@@ -424,6 +424,7 @@ ul.clean { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
 }
 /* Cadrage aéré : le dessin n'occupe que le centre du cadre (marge d'environ 10 %). */
 .demo-frame img { position: absolute; inset: 9% 11% 13%; width: 78%; height: 78%; object-fit: contain; transition: opacity 0.35s ease; }
+.demo-frame.single { cursor: default; }
 .demo-tag {
   position: absolute; left: 8px; bottom: 8px;
   background: #1c1a2b; color: #ffffff; font-size: 0.72rem; font-weight: 600;

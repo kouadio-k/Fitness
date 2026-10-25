@@ -1,13 +1,38 @@
 Dessins d'exercices de ce dossier
 =================================
 
+Tous les dessins de ce dossier sont sous licence Creative Commons Attribution - Partage dans les mêmes
+conditions 4.0 International (CC BY-SA 4.0) : https://creativecommons.org/licenses/by-sa/4.0/deed.fr
+Les fichiers modifiés de ce dossier sont diffusés sous la même licence.
+
+
+1. Everkinetic : fichiers <identifiant Everkinetic>-1.png et -2.png
+--------------------------------------------------------------------
+
 Source : Everkinetic — https://github.com/everkinetic/data
 Auteurs : Greg Priday (everkinetic.com), Frank Paczynski
-Licence : Creative Commons Attribution - Partage dans les mêmes conditions 4.0 International (CC BY-SA 4.0)
-          https://creativecommons.org/licenses/by-sa/4.0/deed.fr
 
 Modifications : images obtenues à partir des fichiers SVG d'origine (dist/svg), car certains PNG
 fournis coupaient le dessin (pieds, banc) ; recadrées autour du dessin avec une marge, redimensionnées
 à 640 px maximum et réduites à 16 niveaux de gris pour alléger l'application. Aucune autre modification.
 
-Fichiers : <identifiant Everkinetic>-1.png (« relaxation ») et -2.png (« tension ») : les deux positions du mouvement.
+-1.png (« relaxation ») et -2.png (« tension ») : les deux positions du mouvement.
+
+
+2. Workout Guide : fichiers wg-<identifiant Workout Guide>-1.png et -2.png (ou -1.png seul)
+-------------------------------------------------------------------------------------------
+
+Source : Workout Guide — https://github.com/bryllim/workout-guide
+         (paquet npm @bryllim/workout-guide, version 1.0.0, dossier assets/<identifiant>/frame-N.png)
+Auteur : Bryl Lim (https://bryllim.com)
+
+Modifications :
+- une ou deux des trois images fournies par exercice ont été retenues (les autres étaient incohérentes
+  ou montraient un autre mouvement) ; -1.png et -2.png ne correspondent donc pas à frame-1 et frame-2 ;
+- encre (canal de transparence, traits blancs) passée en noir sur fond blanc, après agrandissement ×2 et
+  seuillage ;
+- contours doublés fusionnés en un seul trait sur 4 images (curtsy-lunge, banded-pallof-press,
+  mountain-climber, pike-push-up) ;
+- sur certaines images, traits épaissis pour égaler l'autre position du même exercice ;
+- recadrées autour du dessin avec une marge, redimensionnées à 640 px maximum et réduites à
+  16 niveaux de gris.

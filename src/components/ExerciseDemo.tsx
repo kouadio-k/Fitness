@@ -1,23 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
-import { DEMO_CREDIT, DEMO_LICENSE_URL, demoFor } from '../data/exerciseDemos';
+import { DEMO_LICENSE_URL, demoFor } from '../data/exerciseDemos';
 import { videoSearchUrl } from '../data/exerciseVideos';
 import type { Exercise } from '../types';
 
-/** Démo d'un exercice : les deux positions dessinées en alternance, puis des liens vers des vidéos. */
+/** Démo d'un exercice : les deux positions dessinées en alternance (ou un seul dessin), puis des liens vers des vidéos. */
 export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
   // Mémorisé : l'écran de séance se redessine toutes les 0,5 s (chrono), ce qui ne doit pas relancer l'animation.
   const demo = useMemo(() => demoFor(exercise.id), [exercise.id]);
-  const hasDemo = !!demo;
+  const twoFrames = demo?.images.length === 2;
   const [frame, setFrame] = useState(0);
   const [paused, setPaused] = useState(false);
   const [failed, setFailed] = useState(false);
   const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
-    if (!hasDemo || paused || reduceMotion || failed) return;
+    if (!twoFrames || paused || reduceMotion || failed) return;
     const t = window.setInterval(() => setFrame((f) => 1 - f), 1300);
     return () => window.clearInterval(t);
-  }, [hasDemo, paused, reduceMotion, failed]);
+  }, [twoFrames, paused, reduceMotion, failed]);
 
   // Exercice remplacé pendant la séance : on repart de la position de repos.
   useEffect(() => {
@@ -32,7 +32,7 @@ export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
 
   return (
     <div className="col" style={{ gap: 10 }}>
-      {demo && !failed && (
+      {demo && !failed && twoFrames && (
         <>
           <button
             type="button"
@@ -57,6 +57,14 @@ export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
           </div>
         </>
       )}
+      {demo && !failed && !twoFrames && (
+        <>
+          <div className="demo-frame single">
+            <img src={demo.images[0]} alt={exercise.name} onError={() => setFailed(true)} />
+          </div>
+          {demo.approx && <span className="tiny muted">Dessin : {demo.approx}.</span>}
+        </>
+      )}
       {demo && failed && <div className="tiny muted">Dessins indisponibles pour le moment.</div>}
 
       <a className="btn secondary small" style={{ alignSelf: 'flex-start' }} href={videoSearchUrl(exercise.name)} target="_blank" rel="noopener noreferrer">
@@ -64,7 +72,7 @@ export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
       </a>
       {demo && !failed && (
         <div className="tiny muted">
-          {DEMO_CREDIT} (
+          {demo.credit} (
           <a href={DEMO_LICENSE_URL} target="_blank" rel="noopener noreferrer">
             conditions
           </a>

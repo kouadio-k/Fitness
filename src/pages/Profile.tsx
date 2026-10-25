@@ -188,7 +188,7 @@ export function Profile() {
             <b>Note des repas en photo</b> — estimation par l'IA Claude (Anthropic) selon une grille sur 10 : légumes & fruits (3), protéines (2), féculents & fibres (2), degré de transformation (1,5), gras/sucre/sel (1,5). Grille inspirée des repères de Santé publique France (PNNS 2019), de la classification NOVA et du principe de l'assiette équilibrée ; la pondération est un choix de l'application. Quantités et calories estimées sur photo : ordre de grandeur seulement.
           </p>
           <p>
-            <b>Démos d'exercices</b> — dessins Everkinetic (Greg Priday), licence CC BY-SA 4.0, rendus depuis les fichiers SVG d'origine et redimensionnés ; lien vers la recherche YouTube du nom de l'exercice.
+            <b>Démos d'exercices</b> — dessins Everkinetic (Greg Priday) et Workout Guide (Bryl Lim), licence CC BY-SA 4.0, recadrés et redimensionnés ; lien vers la recherche YouTube du nom de l'exercice.
           </p>
           <p>
             <b>1RM estimé</b> — formule d'Epley, indicative uniquement. <b>Aliments</b> — valeurs moyennes arrondies (tables Ciqual/ANSES et USDA) ; produits du commerce via Open Food Facts (données collaboratives).
